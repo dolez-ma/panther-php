@@ -7,10 +7,35 @@
  * @Author: dolez-ma
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+/**
+ * This file is the main entry. Every request gets through this file.
+ * We start by bootstrapping the beast to enable all functionalities.
+ */
+require_once('../vendor/PantherPHP/Panther/Bootstrap.php');
 
-$panther = new \PantherPHP\Panther\Beast();
+use PantherPHP\Panther\Beast as Panther;
 
-require (__DIR__ . '/../app/routes/routes.php');
+/**
+ * Panther is the main entry point, offering mostly static functions
+ * Start the application, this will set debug and load configuration
+ */
+Panther::wakeUp();
 
-$panther->wakeUp();
+/**
+ * Try to match the path to an existing route. if no path given, current $_GET value is used
+ */
+$route = Panther::getBrain()->route();
+var_dump(Panther::getPost()->getNamespace());
+var_dump(Panther::getPost()->getClassName());
+var_dump(Panther::getGet()->getNamespace());
+var_dump(Panther::getGet()->getClassName());
+var_dump(Panther::getSession()->getNamespace());
+var_dump(Panther::getSession()->getClassName());
+
+if($route) {
+    if(!Panther::getBrain()->resolve($route)){
+        // Error
+    }
+} else {
+    // 404
+}
