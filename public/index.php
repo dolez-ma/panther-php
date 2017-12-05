@@ -1,9 +1,5 @@
 <?php
 /**
- * Index.php
- *
- * This file is the entry point for this framework.
- *
  * @Author: dolez-ma
  */
 
@@ -24,18 +20,13 @@ Panther::wakeUp();
 /**
  * Try to match the path to an existing route. if no path given, current $_GET value is used
  */
-$route = Panther::getBrain()->route();
-var_dump(Panther::getPost()->getNamespace());
-var_dump(Panther::getPost()->getClassName());
-var_dump(Panther::getGet()->getNamespace());
-var_dump(Panther::getGet()->getClassName());
-var_dump(Panther::getSession()->getNamespace());
-var_dump(Panther::getSession()->getClassName());
+$route = Panther::getBrain()->resolve();
 
 if($route) {
-    if(!Panther::getBrain()->resolve($route)){
-        // Error
+    if(!Panther::getBrain()->process($route)){
+        // the process has failed
+        echo 'Error: Did you forget to define the controller or action?';
     }
 } else {
-    // 404
+    echo 'Error 404: Page not found';
 }

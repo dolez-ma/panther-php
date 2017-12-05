@@ -14,6 +14,7 @@ use PantherPHP\Panther\App\Get;
 use PantherPHP\Panther\App\Hook;
 use PantherPHP\Panther\App\Log;
 use PantherPHP\Panther\App\Messages;
+use PantherPHP\Panther\App\Parameter;
 use PantherPHP\Panther\App\Post;
 use PantherPHP\Panther\App\Session;
 
@@ -68,6 +69,11 @@ class Beast {
      * @var $log Log
      */
     static $log = null;
+
+    /**
+     * @var $param Parameter
+     */
+    static $parameter = null;
 
     /**
      * @var $messages Messages
@@ -135,6 +141,33 @@ class Beast {
             self::$baseFolder = rtrim($baseFolder, 'public');
         }
         return self::$baseFolder;
+    }
+
+    public static function getPublicUrl(){
+        if(!self::$publicUrl){
+            // Store the complete url
+            if(!isset($_SERVER['REQUEST_SCHEME'])){
+                if(!isset($_SERVER['REDIRECT_REQUEST_SCHEME'])){
+                    $_SERVER['REQUEST_SCHEME'] = 'http';
+                } else {
+                    $_SERVER['REQUEST_SCHEME'] = $_SERVER['REDIRECT_REQUEST_SCHEME'];
+                }
+            }
+            $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
+            $url = rtrim($url, '/');
+            $url = rtrim($url, 'public');
+
+            self::$publicUrl = rtrim($url, '/');
+        }
+        return self::$publicUrl;
+    }
+
+    public function getUrl($path = null){
+        $url = self::getPublicUrl();
+        if($path){
+            $url = $url . '/' . trim($path, '/');
+        }
+        return $url;
     }
 
     /**
@@ -225,6 +258,13 @@ class Beast {
         return self::$get;
     }
 
+    public static function getParameter(){
+        if(!self::$parameter){
+            self::$parameter = new Parameter();
+        }
+        return self::$parameter;
+    }
+
     /**
      * @return Brain
      */
@@ -232,7 +272,7 @@ class Beast {
     {
         if(!self::$brain){
             self::$brain = new Brain();
-            self::$brain->collectRoutes();
+            self::$brain->registerRoutes();
         }
         return self::$brain;
     }

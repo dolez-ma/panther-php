@@ -1,17 +1,34 @@
 <?php
 
+use PantherPHP\Panther\Beast as Panther;
+
 $routes[] = array(
-    'method' => 'GET|POST',
+    'method' => 'GET',
     'path'   => '/',
     'controller' => 'home',
     'action' => 'index',
 );
 
 $routes[] = array(
-    'method' => 'GET|POST',
+    'method' => 'GET',
     'path'   => '/toto',
     'controller' => 'home',
     'action' => 'toto',
 );
 
-\PantherPHP\Panther\Beast::getBrain()->addRoutes('home', $routes);
+$routes[] = array(
+    'method' => 'GET',
+    'path'   => '/post/int:id',
+    'controller' => 'home',
+    'action' => 'viewPost',
+);
+
+$routes[] = array(
+    'method' => 'GET|POST',
+    'path'   => '/post/alpha:name',
+    'callback' => function() {
+        echo 'Callback controller for post: ' . Panther::getParameter()->getValue('name');
+    },
+);
+
+Panther::getBrain()->addRoutes('home', $routes);
